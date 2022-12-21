@@ -1,13 +1,13 @@
 import express from 'express'
 import { Server as HttpServer } from 'http'
 import { Server as IO } from 'socket.io'
-import ProductControler from '../controllers/dbControler.js'
+import dbControler from '../controllers/dbControler.js'
 
 //--------------------------------------------
 // instancio servidor, socket y api
 const app = express()
-const fileProducts = new ProductControler("products")
-const fileMessages = new ProductControler("messages")
+const fileProducts = new dbControler("products")
+const fileMessages = new dbControler("messages")
 
 //--------------------------------------------
 // configuro el socket mensajes y productos
