@@ -52,9 +52,9 @@ formPublicarMensaje.addEventListener("submit", (e) => {
     const time = new Date().toLocaleTimeString();
     const textValue = inputMensaje.value;
     const newMessage = {
-      author: authorValue,
+      user: authorValue,
       date: date + " " + time,
-      text: textValue,
+      message: textValue,
     };
     socket.emit("newMessage", newMessage);
     formPublicarMensaje.reset();
@@ -69,10 +69,10 @@ formPublicarMensaje.addEventListener("submit", (e) => {
     const html = mensajes
       .map((mensaje) => {
         return `<div><strong style="color:blue;">${
-          mensaje.author + " "
+          mensaje.user + " "
         }</strong><span style="color:brown;">${
           mensaje.date + " : "
-        }</span><i style="color:green;">${mensaje.text}</i></div>`;
+        }</span><i style="color:green;">${mensaje.message}</i></div>`;
       })
       .join(" ");
     return html;

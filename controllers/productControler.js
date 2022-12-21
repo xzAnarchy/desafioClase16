@@ -1,4 +1,3 @@
-import fs from "fs"
 import { options } from "../src/mysqlDB.js";
 const knexConnection = knex(options)
 import knex from "knex";
@@ -23,61 +22,30 @@ export default class ProductControler {
     }
   }
 
-  async save(product) {
-    const products = await this.listAll();
-
+  async save(item) {
     try {
-      let id;
-      products.length === 0
-        ? (id = 1)
-        : (id = products[products.length - 1].id + 1);
-      const newProduct = { ...product, id };
-      products.push(newProduct);
-      await this.writeFile(products);
-      return newProduct.id;
+      const ids = await knexConnection(this.table).insert(item)
+      return ids
     } catch (error) {
-      console.log(error);
-    }
+      console.log(error)
+    } 
   }
 
   async update(prod, id) {
-    const products = await this.listAll();
     try {
-      const updatedProduct = products.find(
-        (product) => product.id === parseInt(id)
-      );
-      if (updatedProduct) {
-        const prods = products.filter((product) => product.id !== parseInt(id));
-        prods.push({ ...prod, id: parseInt(id) });
-        await this.writeFile(prods);
-        return updatedProduct;
-      } else {
-        return null;
-      }
+      const dbid = await knexConnection.from(this.table).where("id", id).update(prod)
+      return dbid
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
   }
 
-  async delete(id) {
-    const products = await this.listAll();
+  async deleteById(id) {
     try {
-      const newProducts = products.filter((prod) => prod.id !== id);
-      await this.writeFile(newProducts);
+        return knexConnection(this.table).where("id", id).del()
     } catch (error) {
-      console.log(error);
+        console.log(error)
     }
-  }
+}
 
-  async deleteAll() {
-    await this.writeFile([]);
-  }
-
-  async writeFile(data) {
-    try {
-      await fs.promises.writeFile(this.table, JSON.stringify(data, null, 2));
-    } catch (error) {
-      console.log(error);
-    }
-  }
 }
