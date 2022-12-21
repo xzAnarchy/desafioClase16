@@ -1,7 +1,7 @@
 import express from 'express'
 import { Server as HttpServer } from 'http'
 import { Server as IO } from 'socket.io'
-import ProductControler from '../controllers/productControler.js'
+import ProductControler from '../controllers/dbControler.js'
 
 //--------------------------------------------
 // instancio servidor, socket y api
