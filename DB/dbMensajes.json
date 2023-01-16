@@ -1,0 +1,24 @@
+[
+  {
+    "author": {
+    "id": "admin@email.com",
+    "name": "admin",
+    "last name": "admin",
+    "age": 18,
+    "nickname": "Anarchy",
+    "avatar": "https://dummyimage.com/250/000/fff"
+    },
+    "text": "Bienvenido al canal de chat"
+  },
+  {
+    "author": {
+    "id": "admin2@email.com",
+    "name": "admin2",
+    "last name": "admin2",
+    "age": 21,
+    "nickname": "Anarchy2",
+    "avatar": "https://dummyimage.com/250/000/fff"
+    },
+    "text": "Testing 2"
+  }
+]

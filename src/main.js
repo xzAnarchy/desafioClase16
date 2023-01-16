@@ -1,7 +1,16 @@
 import express from 'express'
 import { Server as HttpServer } from 'http'
 import { Server as IO } from 'socket.io'
-import dbControler from '../controllers/dbControler.js'
+import dbControler from './contenedores/dbControler.js'
+import faker from 'faker'
+const { Router } = express
+faker.locale = 'es'
+
+// Importo el DAOS
+import {
+    productosDao as productosApi,
+    mensajesDao as mensajesApi
+} from './daos/index.js'
 
 //--------------------------------------------
 // instancio servidor, socket y api
@@ -28,7 +37,7 @@ io.on('connection', async (socket) => {
     console.log('nuevo cliente conectado');
 
     //Mensajes 
-    const messages = await fileMessages.listAll();
+    const messages = await mensajesApi.listarAll();
     // Le envio el historial de el array que ya tengo cuando un nuevo cliente se conecte
     socket.emit('message', messages)
     // una vez escuchamos al cliente y recibimos un mensaje, realizamos el envio a todos los demas pusheandolo a un array
@@ -54,10 +63,12 @@ io.on('connection', async (socket) => {
 
 //--------------------------------------------
 // agrego middlewares
+const productosRouterTest = new Router()
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.static('public'))
+app.use('/api/productos-test', productosRouterTest)
 
 //--------------------------------------------
 // inicio el servidor
@@ -67,3 +78,24 @@ const connectedServer = httpServer.listen(PORT, () => {
     console.log(`Servidor http escuchando en el puerto ${connectedServer.address().port}`)
 })
 connectedServer.on('error', error => console.log(`Error en servidor ${error}`))
+
+//-------------------------------------------------
+// Inicio faker
+
+function creaCombinacionesRandom() {
+    return {
+        nombre: faker.commerce.product(),
+        price: faker.commerce.price(),
+        thumbnail: faker.image.imageUrl()
+    }
+}
+
+productosRouterTest.get('/', async (req, res) => {
+    const productosRandom = []
+    for (let i = 0; i < 5; i++) {
+        productosRandom.push(creaCombinacionesRandom())
+    }
+    res.json(productosRandom)
+    // const productos = await productosApi.listarAll()
+    // res.json(productos)
+})

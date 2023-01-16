@@ -1,4 +1,4 @@
-import { options } from "../src/mysqlDB.js";
+import { options } from "../mysqlDB.js";
 const knexConnection = knex(options)
 import knex from "knex";
 
@@ -33,7 +33,7 @@ export default class ProductControler {
 
   async update(prod, id) {
     try {
-      const dbid = await knexConnection.from(this.table).where("id", id).update(prod)
+      const dbid = await knexConnection.from(this.table).where("id", id).update({prod})
       return dbid
     } catch (error) {
       console.log(error)

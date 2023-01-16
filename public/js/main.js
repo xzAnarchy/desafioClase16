@@ -3,6 +3,8 @@ const socket = io.connect()
 
 //-------------------------------------------------------------
 
+//PRODUCTOS CON SOCKET.IO
+
 // Selecciono el form completo y hacemos un preventDefault
 const formAgregarProducto = document.getElementById("formAgregarProducto");
 formAgregarProducto.addEventListener("submit", (e) => {
@@ -68,11 +70,15 @@ formPublicarMensaje.addEventListener("submit", (e) => {
   function makeHtmlList(mensajes) {
     const html = mensajes
       .map((mensaje) => {
-        return `<div><strong style="color:blue;">${
-          mensaje.user + " "
-        }</strong><span style="color:brown;">${
-          mensaje.date + " : "
-        }</span><i style="color:green;">${mensaje.message}</i></div>`;
+        return `<div>
+        <strong style="color:blue;">
+        ${mensaje.author.nickname + " "}
+        </strong>
+        <span style="color:brown;">
+        ${mensaje.author.id + " : "}
+        </span>
+        <i style="color:green;">${mensaje.text}</i>
+        </div>`;
       })
       .join(" ");
     return html;
