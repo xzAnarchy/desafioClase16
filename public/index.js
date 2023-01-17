@@ -37,6 +37,14 @@ socket.on("Products", async (productos) => {
       });
   }
 
+//* --------------------- DESNORMALIZACIÓN DE MENSAJES ---------------------------- */
+const authorSchema = new normalizr.schema.Entity('authors',{}, {idAttribute:"mail"});
+const textSchema = new normalizr.schema.Entity('text');
+const mensajeSchema = new normalizr.schema.Entity('messages', {
+    author: authorSchema,
+    text: [textSchema]
+});
+
 
 //-----------------------------------------------------
 // PARTE CHAT WEBSOCKET
@@ -78,9 +86,21 @@ formPublicarMensaje.addEventListener("submit", (e) => {
     formPublicarMensaje.reset();
   });
 
-  socket.on("message", (mensajes) => {
-    const htmlMensajes = makeHtmlList(mensajes);
-    document.getElementById("mensajes").innerHTML = htmlMensajes;
+  socket.on("message", mensajesN => {
+    let mensajesNsize = JSON.stringify(mensajesN).length
+    console.log(mensajesN, mensajesNsize);
+
+    let mensajesD = normalizr.denormalize(mensajesN.result, [mensajeSchema], mensajesN.entities)
+    let mensajesDsize = JSON.stringify(mensajesD).length
+    console.log(mensajesD, mensajesDsize);
+
+    let porcentajeC = parseInt((mensajesNsize * 100) / mensajesDsize)
+    console.log(`Porcentaje de compresión ${porcentajeC}%`)
+    document.getElementById('compresion-info').innerText = porcentajeC
+
+
+    const html = makeHtmlList(mensajesD)
+    document.getElementById('mensajes').innerHTML = html;
   });
   
   function makeHtmlList(mensajes) {

@@ -51,19 +51,23 @@ const io = new IO(httpServer)
 io.on('connection', async (socket) => {
     console.log('nuevo cliente conectado');
 
-    listarMensajesNormalizados()
-
     //Mensajes 
-    const messages = await mensajesApi.listarAll();
+    // const messages = await mensajesApi.listarAll();
+    // socket.emit('message', messages)
     // Le envio el historial de el array que ya tengo cuando un nuevo cliente se conecte
-    socket.emit('message', messages)
+    listarMensajesNormalizados()
+    .then((mensajesN)=>{
+        socket.emit('message', mensajesN)
+    })   
     // una vez escuchamos al cliente y recibimos un mensaje, realizamos el envio a todos los demas pusheandolo a un array
     socket.on('newMessage', async (data) => {
         await mensajesApi.guardar(data);
-        const newMessages = await mensajesApi.listarAll();
         listarMensajesNormalizados()
+        .then((res)=>{
+            io.sockets.emit('mensajes',res)
+        })
         // re enviamos por medio broadcast los msn a todos los clientes que esten conectados en ese momento
-        io.sockets.emit('message', newMessages)
+        // io.sockets.emit('message', newMessages)
     })
 
     //--------------------------------------------------------------------------------------------------------------------------
