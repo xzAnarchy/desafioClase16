@@ -15,21 +15,23 @@ function print(objeto) {
     console.log(util.inspect(objeto, false, 12, true));
 }
 
- //Definimos un esquemas de autores
+//Definimos un esquemas de autores
  const authorSchema = new schema.Entity('authors',{}, {idAttribute:"mail"});
  const textSchema = new schema.Entity('text');
  const mensajeSchema = new schema.Entity('messages', {
      author: authorSchema,
      text: [textSchema]
- });
+});
 
-async function listarMensajesNormalizados() {
+// Creamos esta funcion para listar los mensajes normalizados utilizando los metodos del contenedor 
+async function listarMensajesN() {
     const archivoMensajes = await mensajesApi.listarAll()
     const normalizados = normalizarMensajes(archivoMensajes)
     print(normalizados)
     return normalizados
 }
 const normalizarMensajes = (mensajesConId) => normalize(mensajesConId, [mensajeSchema])
+
 // Importo el DAOS
 import {
     productosDao as productosApi,
@@ -52,22 +54,19 @@ io.on('connection', async (socket) => {
     console.log('nuevo cliente conectado');
 
     //Mensajes 
-    // const messages = await mensajesApi.listarAll();
-    // socket.emit('message', messages)
-    // Le envio el historial de el array que ya tengo cuando un nuevo cliente se conecte
-    listarMensajesNormalizados()
+    //Utilizamos esta funcion para enviar los mensajes normalizados mediante el socket y que sean recibidos en el js del html
+    listarMensajesN()
     .then((mensajesN)=>{
         socket.emit('message', mensajesN)
     })   
     // una vez escuchamos al cliente y recibimos un mensaje, realizamos el envio a todos los demas pusheandolo a un array
     socket.on('newMessage', async (data) => {
         await mensajesApi.guardar(data);
-        listarMensajesNormalizados()
+        listarMensajesN()
         .then((res)=>{
             io.sockets.emit('mensajes',res)
         })
         // re enviamos por medio broadcast los msn a todos los clientes que esten conectados en ese momento
-        // io.sockets.emit('message', newMessages)
     })
 
     //--------------------------------------------------------------------------------------------------------------------------

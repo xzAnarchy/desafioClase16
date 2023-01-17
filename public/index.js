@@ -87,22 +87,24 @@ formPublicarMensaje.addEventListener("submit", (e) => {
   });
 
   socket.on("message", mensajesN => {
+    // Dernomalizamos los mensajes recibidos por el socket y los integramos al html
+    let mensajesDenormalized = normalizr.denormalize(mensajesN.result, [mensajeSchema], mensajesN.entities)
+    const html = makeHtmlList(mensajesDenormalized)
+    document.getElementById('mensajes').innerHTML = html;
+    
+    // Guardamos el tamaño de la data y hacemos el porcentaje
     let mensajesNsize = JSON.stringify(mensajesN).length
     console.log(mensajesN, mensajesNsize);
+    let mensajesDsize = JSON.stringify(mensajesDenormalized).length
+    console.log(mensajesDenormalized, mensajesDsize);
 
-    let mensajesD = normalizr.denormalize(mensajesN.result, [mensajeSchema], mensajesN.entities)
-    let mensajesDsize = JSON.stringify(mensajesD).length
-    console.log(mensajesD, mensajesDsize);
-
+    // Logica del porcentaje
     let porcentajeC = parseInt((mensajesNsize * 100) / mensajesDsize)
     console.log(`Porcentaje de compresión ${porcentajeC}%`)
     document.getElementById('compresion-info').innerText = porcentajeC
-
-
-    const html = makeHtmlList(mensajesD)
-    document.getElementById('mensajes').innerHTML = html;
   });
   
+  // Funcion del html para integrar todos los datos de lo recibido por el socket
   function makeHtmlList(mensajes) {
     const html = mensajes
       .map((mensaje) => {

@@ -1,6 +1,5 @@
 import { promises as fs } from 'fs'
 import config from '../config.js'
-import { normalize, schema } from 'normalizr';
 import util from 'util'
 
 function print(objeto) {
