@@ -1,11 +1,35 @@
 import express from 'express'
 import { Server as HttpServer } from 'http'
 import { Server as IO } from 'socket.io'
-import dbControler from './contenedores/dbControler.js'
-import faker from 'faker'
 const { Router } = express
+import dbControler from './contenedores/dbControler.js'
+
+//FAKER
+import faker from 'faker'
 faker.locale = 'es'
 
+// NORMALIZR
+import { normalize, schema } from 'normalizr';
+import util from 'util'
+function print(objeto) {
+    console.log(util.inspect(objeto, false, 12, true));
+}
+
+ //Definimos un esquemas de autores
+ const authorSchema = new schema.Entity('authors',{}, {idAttribute:"mail"});
+ const textSchema = new schema.Entity('text');
+ const mensajeSchema = new schema.Entity('messages', {
+     author: authorSchema,
+     text: [textSchema]
+ });
+
+async function listarMensajesNormalizados() {
+    const archivoMensajes = await mensajesApi.listarAll()
+    const normalizados = normalizarMensajes(archivoMensajes)
+    print(normalizados)
+    return normalizados
+}
+const normalizarMensajes = (mensajesConId) => normalize(mensajesConId, [mensajeSchema])
 // Importo el DAOS
 import {
     productosDao as productosApi,
@@ -24,17 +48,10 @@ const fileMessages = new dbControler("messages")
 const httpServer = new HttpServer(app)
 const io = new IO(httpServer)
 
-// const messages = [
-//     { author: 'Pablo', text: 'Hola, que tal' },
-//     { author: 'Marcelo', text: 'muy bien y tu?' },
-//     { author: 'Belen', text: 'Hola!!' }
-// ]
-// const Products = [
-//     { title: 'agua', price: 20, thumbnail: 'https://dummyimage.com/250/000/fff'}
-// ]
-
 io.on('connection', async (socket) => {
     console.log('nuevo cliente conectado');
+
+    listarMensajesNormalizados()
 
     //Mensajes 
     const messages = await mensajesApi.listarAll();
@@ -42,11 +59,14 @@ io.on('connection', async (socket) => {
     socket.emit('message', messages)
     // una vez escuchamos al cliente y recibimos un mensaje, realizamos el envio a todos los demas pusheandolo a un array
     socket.on('newMessage', async (data) => {
-        await fileMessages.save(data);
-        const newMessages = await fileMessages.listAll();
+        await mensajesApi.guardar(data);
+        const newMessages = await mensajesApi.listarAll();
+        listarMensajesNormalizados()
         // re enviamos por medio broadcast los msn a todos los clientes que esten conectados en ese momento
         io.sockets.emit('message', newMessages)
     })
+
+    //--------------------------------------------------------------------------------------------------------------------------
 
     // productos
     const products = await fileProducts.listAll();

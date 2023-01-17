@@ -40,8 +40,12 @@ socket.on("Products", async (productos) => {
 
 //-----------------------------------------------------
 // PARTE CHAT WEBSOCKET
-
-const inputUsername = document.getElementById("inputUsername");
+const inputEmail= document.getElementById("authorId")
+const inputName = document.getElementById("authorName");
+const inputLastName = document.getElementById("authorLastName");
+const inputAge = document.getElementById("authorAge");
+const inputUsername = document.getElementById("authorUsername");
+const inputAvatar = document.getElementById("authorAvatar");
 const inputMensaje = document.getElementById("inputMensaje");
 const btnEnviar = document.getElementById("btnEnviar");
 
@@ -49,14 +53,26 @@ const btnEnviar = document.getElementById("btnEnviar");
 const formPublicarMensaje = document.getElementById("formPublicarMensaje");
 formPublicarMensaje.addEventListener("submit", (e) => {
     e.preventDefault();
-    const authorValue = inputUsername.value;
+    const emailValue = inputEmail.value;
+    const nameValue = inputName.value;
+    const lastNameValue = inputLastName.value;
+    const ageValue = inputAge.value;
+    const inputUsernameValue = inputUsername.value;
+    const avatarValue = inputAvatar.value;
     const date = new Date().toLocaleDateString('es-ES')
     const time = new Date().toLocaleTimeString();
     const textValue = inputMensaje.value;
     const newMessage = {
-      user: authorValue,
-      date: date + " " + time,
-      message: textValue,
+      author: {
+        mail: emailValue,
+        name: nameValue,
+        lastName: lastNameValue,
+        age: ageValue,
+        username: inputUsernameValue,
+        avatar: avatarValue
+      },
+      text: textValue,
+      date: date + " " + time
     };
     socket.emit("newMessage", newMessage);
     formPublicarMensaje.reset();
@@ -70,13 +86,15 @@ formPublicarMensaje.addEventListener("submit", (e) => {
   function makeHtmlList(mensajes) {
     const html = mensajes
       .map((mensaje) => {
-        return `<div>
-        <strong style="color:blue;">
-        ${mensaje.author.nickname + " "}
-        </strong>
+        return `<div style="margin-bottom: 10px;">
+        <img src="${mensaje.author.avatar}" height="30px">
         <span style="color:brown;">
-        ${mensaje.author.id + " : "}
+        ${mensaje.author.mail + " "}
         </span>
+        <strong style="color:blue;">
+        ${mensaje.author.name + " "}
+        ${mensaje.author.lastName + " : "}
+        </strong>
         <i style="color:green;">${mensaje.text}</i>
         </div>`;
       })
