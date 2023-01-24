@@ -13,3 +13,9 @@ Aqui encontraran la mayoria de configuraciones del servidor express y todas las 
 ### CONFIG.JS 
 Son todas las configuraciones de rutas, mongo, sql. Se utilizan para los controladores.
 
+### ROUTERS FOLDER
+En esta carpeta nos encontraremos tres (3) carpetas adicionales:
+
+#### API FOLDER
+Dentro de esta carpeta se encuentra productos.js, consiste en una ruta (api rest) donde al hacer un GET se ejecuta una funcion que muestra en el DOM 5 productos random utilizando FAKER
+
