@@ -21,3 +21,6 @@ Dentro de esta carpeta se encuentra productos.js, consiste en una ruta (api rest
 
 #### WEB FOLDER
 En esta carpeta van a encontrar todos los metodos de autenticacion utilizados en el desafio, definidos principalmente en el archivo AUTH.JS, una vez se realizan las autenticaciones establecidad en el archivo AUTH, se redirige al HOME.JS donde se utiliza un middleware definido en en la carpeta AUTH donde si no tienes un nombre guardado en sesion, seras redirigido al login.
+
+#### WS FOLDER (WEB SOCKET)
+En esta carpeta se defininen todos los "canales" del socket donde se recibe y se envia la informacion, utilizando los metodos definidos en el api, que a su vez se extienden de los controllers.
