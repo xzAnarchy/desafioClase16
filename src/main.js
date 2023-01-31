@@ -1,6 +1,8 @@
 import express from 'express'
 import session from 'express-session'
 import MongoStore from 'connect-mongo'
+import cookieParser from 'cookie-parser'
+import passport from 'passport'
 
 import config from './config.js'
 
@@ -14,12 +16,22 @@ import productosApiRouter from './routers/api/productos.js'
 import addProductosHandlers from './routers/ws/productos.js'
 import addMensajesHandlers from './routers/ws/mensajes.js'
 
+import objectUtils from './utils/objectUtils.js'
+
+import path from 'path';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 //--------------------------------------------
-// instancio servidor, socket y api
+// instancio servidor, socket , api y passport
 
 const app = express()
 const httpServer = new HttpServer(app)
 const io = new Socket(httpServer)
+
+app.use(passport.initialize())
+
 
 //--------------------------------------------
 // configuro el socket
@@ -39,17 +51,28 @@ app.use(express.static('public'))
 
 app.set('view engine', 'ejs');
 
-app.use(session({
-    // store: MongoStore.create({ mongoUrl: config.mongoLocal.cnxStr }),
-    store: MongoStore.create({ mongoUrl: config.mongoRemote.cnxStr }),
-    secret: 'shhhhhhhhhhhhhhhhhhhhh',
-    resave: false,
-    saveUninitialized: false,
-    rolling: true,
-    cookie: {
-        maxAge: 60000
-    }
-}))
+app.use(cookieParser())
+app.use(objectUtils.createOnMongoStore())
+
+// MIDDLEWARE PASSPORT
+app.use(passport.initialize())
+app.use(passport.session())
+
+// app.use(session({
+//     // store: MongoStore.create({ mongoUrl: config.mongoLocal.cnxStr }),
+//     store: MongoStore.create({ mongoUrl: config.mongoRemote.cnxStr }),
+//     secret: 'shhhhhhhhhhhhhhhhhhhhh',
+//     resave: false,
+//     saveUninitialized: false,
+//     rolling: true,
+//     cookie: {
+//         maxAge: 60000
+//     }
+// }))
+import auth from './routers/web/auth.js'
+const sessions = auth
+app.use('/api/sessions', sessions)
+//req.session.passport.user
 
 //--------------------------------------------
 // rutas del servidor API REST

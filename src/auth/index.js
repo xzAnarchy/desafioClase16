@@ -1,5 +1,5 @@
 export function webAuth(req, res, next) {
-    if (req.session?.nombre) {
+    if (req.session.passport?.user) {
         next()
     } else {
         res.redirect('/login')

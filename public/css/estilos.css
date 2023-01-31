@@ -11,16 +11,17 @@ label {
   min-height: 100vh;
 }
 
-.fecha {
-  color: #722626;
+.login {
+  min-height: 40vh;
 }
 
-.texto-msj {
-  color: #00ff1e;
-  font-style: italic;
+.table td,
+.table th {
+  vertical-align: middle;
 }
-
-.productsImage {
-  max-width: 100px;
-  max-height: 100px;
+hr {
+  background-color: #ddd;
+}
+.jumbotron {
+  min-height: 100vh;
 }
