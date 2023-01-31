@@ -29,5 +29,4 @@ class SessionService {
     return true
     }
 }
-
 export default SessionService
